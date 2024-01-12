@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include "toolsy.h"
 #include "definicje.h"
+
 #define NIE 0
 #define TAK 1
 
-void wypisz(plansza* p);
-void vanish(plansza*);
-plansza sory_memory(plansza*);
-plansza ruszek(plansza, ruch);
-ruch dokad_przybyszu(plansza);
-void no_to_gramy(plansza, plansza, plansza);
-plansza czy_bicie(plansza, plansza, plansza);
-plansza bicie_po_sznurku(plansza, plansza*, plansza, int, int, int, int);
-int czy_pelna(plansza);
-int czy_prawidlowy_ruch(plansza, int, int);
-void generuj_ruchy(plansza);
-int czy_samobojstwo(plansza, int, int);
+void wypisz(plansza *plac_boju);
+void vanish(plansza *plac_boju);
+plansza sory_memory(plansza *plac_boju);
+plansza ruszek(plansza teatr_wojenny, ruch staruszek);
+ruch dokad_przybyszu(plansza teatr_wojenny);
+void no_to_gramy(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane);
+plansza czy_bicie(plansza teatr_wojenny, plansza niby_zbity, plansza zbadane);
+plansza bicie_po_sznurku(plansza teatr_wojenny, plansza *niby_zbite, plansza zbadane, int bity, int bijacy, int i, int j);
+int czy_pelna(plansza teatr_wojenny);
 
-int main() {
+int main()
+{
+
     plansza zbadane;
     vanish(&zbadane);
     plansza niby_zbite;
@@ -29,7 +29,8 @@ int main() {
     return 0;
 }
 
-void no_to_gramy(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
+void no_to_gramy(plansza teatr_wojenny, plansza niby_zbity, plansza zbadane)
+{
     int pomocnik;
     int qniec = 0;
     vanish(&teatr_wojenny);
@@ -37,7 +38,8 @@ void no_to_gramy(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
     wypisz(&teatr_wojenny);
     plansza plac_boju;
 
-    do {
+    do
+    {
 
         teatr_wojenny.ruch_gracza_X = RUCH_CZARNY;
         ruch staruszek1 = dokad_przybyszu(teatr_wojenny);
@@ -47,7 +49,7 @@ void no_to_gramy(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
         if (plac_boju.qn == 1 || czy_pelna(teatr_wojenny) == SZEROKOSC_PLANSZY * WYSOKOSC_PLANSZY)
             qniec++;
         else
-            plac_boju = czy_bicie(teatr_wojenny, &niby_zbite, zbadane);
+            plac_boju = czy_bicie(teatr_wojenny, niby_zbity, zbadane);
 
         teatr_wojenny = plac_boju;
         wypisz(&plac_boju);
@@ -61,38 +63,40 @@ void no_to_gramy(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
         if (plac_boju.qn == 1 || czy_pelna(teatr_wojenny) == SZEROKOSC_PLANSZY * WYSOKOSC_PLANSZY)
             qniec++;
         else
-            plac_boju = czy_bicie(teatr_wojenny, &niby_zbite, zbadane);
+            plac_boju = czy_bicie(teatr_wojenny, niby_zbity, zbadane);
 
         teatr_wojenny = plac_boju;
         wypisz(&plac_boju);
 
     } while (qniec != 2);
 
-    printf("\nobydwaj gracze spasowali");
-    printf("\nende tu sprawdzanie stanu posiadania pul (tak wiem u XD).");
+    printf("\nObydwaj gracze spasowali");
+    printf("\nKoniec gry - sprawdzenie stanu posiadania pul (tak wiem, brzydkie XD).\n");
 }
 
-ruch dokad_przybyszu(plansza teatr_wojenny) {
+ruch dokad_przybyszu(plansza teatr_wojenny)
+{
     int w, k;
     char where[3];
 
-    printf("\n\ngdzie chcesz sie postawic? -->");
+    printf("\n\nGdzie chcesz sie postawic? --> ");
     scanf("%s", &where);
-    ruch staruch = { .pas = TAK };
-    if (where[0] == 'p' && where[1] == 'a' && where[2] == 's') { //SPRAWDZA CZY PAS
-
+    ruch staruch = {.pas = TAK};
+    if (where[0] == 'p' && where[1] == 'a' && where[2] == 's')
+    { //SPRAWDZA CZY PAS
         return staruch;
     }
 
-    if (where[0] >= 'A' && where[0] < ('A' + SZEROKOSC_PLANSZY) && where[1] < ('0' //SPRAWDZA I INTERPRETUJE WARTOSC WPISANA PRZEZ UZYTK I PRZETWARZA NA KOORDYNATY
-        + WYSOKOSC_PLANSZY) && teatr_wojenny.plain[where[0] - 'A'][where[1] - '0'] == PUSTE) {
+    if (where[0] >= 'A' && where[0] < ('A' + SZEROKOSC_PLANSZY) && where[1] < ('0' + WYSOKOSC_PLANSZY) && teatr_wojenny.plain[where[0] - 'A'][where[1] - '0'] == PUSTE)
+    {
 
-        ruch staruch = { .wierszyk = where[1] - '0',.kolumnyk = where[0] - 'A' };
+        ruch staruch = {.wierszyk = where[1] - '0', .kolumnyk = where[0] - 'A'};
         printf("\nRozkaz!\n");
         staruch.pas = NIE;
         return staruch;
     }
-    else {
+    else
+    {
         printf("\nPanie Majorze, nie da sie D:");
         printf("\nPowtorz rozkaz...\n");
         staruch = dokad_przybyszu(teatr_wojenny);
@@ -100,16 +104,19 @@ ruch dokad_przybyszu(plansza teatr_wojenny) {
     }
 }
 
-plansza ruszek(plansza teatr_wojenny, ruch staruszek) {
+plansza ruszek(plansza teatr_wojenny, ruch staruszek)
+{
     int i = staruszek.kolumnyk;
     int j = staruszek.wierszyk;
 
-    if (staruszek.pas == TAK) {
+    if (staruszek.pas == TAK)
+    {
         teatr_wojenny.qn = 1;
         teatr_wojenny.blad = NO;
         return teatr_wojenny;
     }
-    if (teatr_wojenny.plain[i][j] == PUSTE) {
+    if (teatr_wojenny.plain[i][j] == PUSTE)
+    {
         if (teatr_wojenny.ruch_gracza_X == RUCH_CZARNY)
             teatr_wojenny.plain[i][j] = CZARNA;
         if (teatr_wojenny.ruch_gracza_X == RUCH_BIALY)
@@ -117,55 +124,60 @@ plansza ruszek(plansza teatr_wojenny, ruch staruszek) {
 
         teatr_wojenny.blad = NO;
 
-        int czy_samobojstwo = czy_samobojstwo(teatr_wojenny, i, j);
-        if (czy_samobojstwo == TAK) {
-            // Jeśli ruch jest niedozwolony (samobójstwo), cofnij go
-            teatr_wojenny.plain[i][j] = PUSTE;
-            printf("Ruch niedozwolony - samobójstwo!\n");
-        }
-
         return teatr_wojenny;
     }
-    if (teatr_wojenny.plain[i][j] != PUSTE) {
+    if (teatr_wojenny.plain[i][j] != PUSTE)
+    {
         ruszek(teatr_wojenny, staruszek);
     }
+
+    return teatr_wojenny;
 }
 
-plansza czy_bicie(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
+plansza czy_bicie(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane)
+{
     int sojuz = 0, pusteczka = 0;
 
-    int bity;                                     //kogo badamy
+    int bity; // kogo badamy
     int bijacy;
-    if (teatr_wojenny.ruch_gracza_X == RUCH_CZARNY) {
+    if (teatr_wojenny.ruch_gracza_X == RUCH_CZARNY)
+    {
         bity = BIALA;
         bijacy = CZARNA;
     }
-    if (teatr_wojenny.ruch_gracza_X == RUCH_BIALY) {
+    if (teatr_wojenny.ruch_gracza_X == RUCH_BIALY)
+    {
         bity = CZARNA;
         bijacy = BIALA;
     }
     for (int j = 0; j < SZEROKOSC_PLANSZY; j++)
-        for (int i = 0; i < WYSOKOSC_PLANSZY; i++) {
-            if (teatr_wojenny.plain[i][j] == bity && teatr_wojenny.plain[i][j] != zbadane.plain[i][j]) {
-                if (i - 1 >= 0 && teatr_wojenny.plain[i - 1][j] == bity && teatr_wojenny.plain[i - 1][j] != zbadane.plain[i - 1][j]) { //sprawdza czy ma sasiadow przyjaciol
+        for (int i = 0; i < WYSOKOSC_PLANSZY; i++)
+        {
+            if (teatr_wojenny.plain[i][j] == bity && teatr_wojenny.plain[i][j] != zbadane.plain[i][j])
+            {
+                if (i - 1 >= 0 && teatr_wojenny.plain[i - 1][j] == bity && teatr_wojenny.plain[i - 1][j] != zbadane.plain[i - 1][j])
+                { //sprawdza czy ma sasiadow przyjaciol
                     zbadane.plain[i][j] = teatr_wojenny.plain[i][j];
                     teatr_wojenny = bicie_po_sznurku(teatr_wojenny, &niby_zbite, zbadane, bity, bijacy, i - 1, j);
                     if (teatr_wojenny.bezpieczenstwo == BEZP)
                         sojuz++;
                 }
-                if (j - 1 >= 0 && teatr_wojenny.plain[i][j - 1] == bity && teatr_wojenny.plain[i][j - 1] != zbadane.plain[i][j - 1]) {
+                if (j - 1 >= 0 && teatr_wojenny.plain[i][j - 1] == bity && teatr_wojenny.plain[i][j - 1] != zbadane.plain[i][j - 1])
+                {
                     zbadane.plain[i][j] = teatr_wojenny.plain[i][j];
                     teatr_wojenny = bicie_po_sznurku(teatr_wojenny, &niby_zbite, zbadane, bity, bijacy, i, j - 1);
                     if (teatr_wojenny.bezpieczenstwo == BEZP)
                         sojuz++;
                 }
-                if (i + 1 <= SZEROKOSC_PLANSZY && teatr_wojenny.plain[i + 1][j] == bity && teatr_wojenny.plain[i + 1][j] != zbadane.plain[i + 1][j]) {
+                if (i + 1 <= SZEROKOSC_PLANSZY && teatr_wojenny.plain[i + 1][j] == bity && teatr_wojenny.plain[i + 1][j] != zbadane.plain[i + 1][j])
+                {
                     zbadane.plain[i][j] = teatr_wojenny.plain[i][j];
                     teatr_wojenny = bicie_po_sznurku(teatr_wojenny, &niby_zbite, zbadane, bity, bijacy, i + 1, j);
                     if (teatr_wojenny.bezpieczenstwo == BEZP)
                         sojuz++;
                 }
-                if (j + 1 <= WYSOKOSC_PLANSZY && teatr_wojenny.plain[i][j + 1] == bity && teatr_wojenny.plain[i][j + 1] != zbadane.plain[i][j + 1]) {
+                if (j + 1 <= WYSOKOSC_PLANSZY && teatr_wojenny.plain[i][j + 1] == bity && teatr_wojenny.plain[i][j + 1] != zbadane.plain[i][j + 1])
+                {
                     zbadane.plain[i][j] = teatr_wojenny.plain[i][j];
                     teatr_wojenny = bicie_po_sznurku(teatr_wojenny, &niby_zbite, zbadane, bity, bijacy, i, j + 1);
                     if (teatr_wojenny.bezpieczenstwo == BEZP)
@@ -186,9 +198,7 @@ plansza czy_bicie(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
 
                 pusteczka = 0;
                 sojuz = 0;
-
             }
-
         }
 
     for (int j = 0; j < SZEROKOSC_PLANSZY; j++)
@@ -202,19 +212,26 @@ plansza czy_bicie(plansza teatr_wojenny, plansza niby_zbite, plansza zbadane) {
     return teatr_wojenny;
 }
 
-plansza bicie_po_sznurku(plansza teatr_wojenny, plansza* niby_zbite, plansza zbadane, int bity, int bijacy, int i, int j) {
+plansza bicie_po_sznurku(plansza teatr_wojenny, plansza *niby_zbite, plansza zbadane, int bity, int bijacy, int i, int j)
+{
     int sojuz = 0, pusteczka = 0;
 
-    if (i - 1 >= 0 && teatr_wojenny.plain[i - 1][j] == bity && teatr_wojenny.plain[i - 1][j] != zbadane.plain[i - 1][j]) { //sprawdza czy ma sasiadow przyjaciol
+    if (i - 1 >= 0 && teatr_wojenny.plain[i - 1][j] == bity && teatr_wojenny.plain[i - 1][j] != zbadane.plain[i - 1][j])
+    { //sprawdza czy ma sasiadow przyjaciol
         zbadane.plain[i - 1][j] = teatr_wojenny.plain[i - 1][j];
         teatr_wojenny = bicie_po_sznurku(teatr_wojenny, niby_zbite, zbadane, bity, bijacy, i - 1, j);
         if (teatr_wojenny.bezpieczenstwo == BEZP)
             sojuz++;
     }
-    if (j - 1 >= 0 && teatr_wojenny.plain[i][j - 1] == bity && teatr_wojenny.plain[i][j - 1] != zbadane.plain[i][j - 1]) {
+    if (j - 1 >= 0 && teatr_wojenny.plain[i][j - 1] == bity && teatr_wojenny.plain[i][j - 1] != zbadane.plain[i][j - 1])
+    {
         zbadane.plain[i][j - 1] = teatr_wojenny.plain[i][j - 1];
         teatr_wojenny = bicie_po_sznurku(teatr_wojenny, niby_zbite, zbadane, bity, bijacy, i, j - 1);
         if (teatr_wojenny.bezpieczenstwo == BEZP)
             sojuz++;
     }
-    if (i + 1 <= SZEROKOSC_PLANSZY && teatr_wojenny.plain[i + 1][j] == bity && teatr_wojenny.plain[i + 1][j] != zbadane.plain[i + 1
+    if (i + 1 <= SZEROKOSC_PLANSZY && teatr_wojenny.plain[i + 1][j] == bity && teatr_wojenny.plain[i + 1][j] != zbadane.plain[i + 1][j])
+    {
+        zbadane.plain[i + 1][j] = teatr_wojenny.plain[i + 1][j];
+        teatr_wojenny = bicie_po_sznurku(teatr_wojenny, niby_zbite, zbadane, bity, bijacy, i + 1, j);
+        if (
