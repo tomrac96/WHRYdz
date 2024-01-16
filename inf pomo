@@ -270,3 +270,41 @@ int czy_pelna(plansza teart_wojenny){
 
     return pelnosc;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void graj()
+{
+    int glebokosc_kolka, glebokosc_krzyzyka;
+
+    printf("Podaj poziom trudności dla gracza kolka: ");
+    scanf("%d", &glebokosc_kolka);
+
+    printf("Podaj poziom trudności dla gracza krzyzyka: ");
+    scanf("%d", &glebokosc_krzyzyka);
+
+    printf("info glebokosc kolka %d glebokosc krzyzyka %d\n", glebokosc_kolka, glebokosc_krzyzyka);
+
+    // Wywołaj funkcję __graj(), przekazując wybrane poziomy trudności.
+    __graj(poletko.gracz_na_ruchu == RUCH_BIALEGO ? glebokosc_kolka : glebokosc_krzyzyka);
+}
